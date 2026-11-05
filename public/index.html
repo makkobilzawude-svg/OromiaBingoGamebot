@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oromia Bingo Demo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:12px;font-family:Arial,sans-serif;text-align:center;color:white;background:linear-gradient(135deg,#101c54,#126b72,#45245d);min-height:100vh}
+.container{max-width:600px;margin:auto}
+.card{background:#ffffff18;padding:15px;border-radius:16px;margin:12px 0}
+h1{color:#ffe66d}
+button{border:0;border-radius:9px;padding:12px;margin:4px;font-size:15px;font-weight:bold;background:#ffe66d;color:#222}
+#cards{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+#cards button{padding:11px 2px;margin:0;font-size:13px}
+#cards button.selected{background:#64e6a5;outline:2px solid white}
+#boards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.player-board{background:#ffffff18;padding:4px;border-radius:8px;min-width:0}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.cell{background:white;color:#222;border-radius:4px;padding:8px 0;font-weight:bold;font-size:11px}
+.cell.marked{background:#64e6a5}
+#called{font-size:35px;color:#ffe66d;font-weight:bold}
+.hidden{display:none}
+#message{font-weight:bold;color:#ffe66d}
+.small{font-size:13px}
+
+.wallet-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.wallet-menu button{width:100%;margin:0;padding:14px 5px}
+#walletInfo{background:#ffffff20;padding:12px;border-radius:10px;margin-top:10px;display:none}
+
+
+.stake-box{border:3px solid #a77b32;border-radius:22px;padding:20px 12px;margin:35px 0;background:#ffffff12}
+.stake-box h3{margin:12px 0 45px;font-size:23px}
+.stake-box button{display:block;width:100%;padding:17px;margin:25px 0;font-size:22px;color:white;border-radius:28px}
+.play10{background:linear-gradient(90deg,#00d49b,#009b8d)}
+.play20{background:linear-gradient(90deg,#079bea,#5438f5)}
+.stats-box{background:#ffffff18;border:1px solid #ffffff30;border-radius:22px;padding:25px;margin:25px 0}
+.stats-box h2{font-size:35px;margin:20px 0 5px}
+.stats-box p{font-size:19px;color:#ddd;margin:5px 0 35px}
+body{background:linear-gradient(135deg,#45116b,#111a36,#24265d);padding-bottom:30px}
+
+body{background:#171d35!important;padding:8px!important}
+.container{max-width:900px!important}
+.game-room{padding:5px 0}
+.top-stats{display:grid;grid-template-columns:1.3fr 1fr .8fr 1fr .8fr;gap:5px;margin:8px 0}
+.top-stats div{background:#303650;border:1px solid #59617c;border-radius:7px;padding:8px 4px;text-align:left;min-width:0}
+.top-stats small{display:block;font-size:11px;color:#ddd;margin-bottom:5px}
+.top-stats b{font-size:14px;overflow-wrap:anywhere}
+.game-columns{display:grid;grid-template-columns:1fr 1.05fr;gap:7px}
+.ball-board{background:#303650;border:1px solid #58617e;border-radius:8px;padding:7px}
+.ball-head{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px}
+.ball-head b{padding:12px 2px;border-radius:6px;font-size:17px}
+.ball-head b:nth-child(1){background:#2588ee}
+.ball-head b:nth-child(2){background:#6655ed}
+.ball-head b:nth-child(3){background:#a33ee9}
+.ball-head b:nth-child(4){background:#05bd69}
+.ball-head b:nth-child(5){background:#f07816}
+#ballGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(15,minmax(29px,auto));grid-auto-flow:column;gap:4px}
+.ball-cell{display:flex;align-items:center;justify-content:center;background:#625879;border:1px solid #8b819c;border-radius:5px;min-height:29px;font-size:13px}
+.ball-cell.called-ball{background:#05bd69;color:white;font-weight:bold}
+.game-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sound-bar,.auto-switch{background:#303650;border:1px solid #58617e;border-radius:20px;padding:10px;display:flex;justify-content:space-between;align-items:center}
+.big-ball{min-height:130px;background:linear-gradient(120deg,#514b55,#282d49);border:1px solid #62617a;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#f7dc27;font-size:38px;font-weight:900}
+.auto-switch input{width:40px;height:22px;accent-color:#08bd72}
+.watch-panel{flex:1;min-height:300px;background:linear-gradient(145deg,#303650,#35305f);border:1px solid #58617e;border-radius:8px;padding:12px 7px}
+.watch-panel h2{font-size:21px;margin:22px 0 30px}
+#message{font-size:14px;line-height:1.5}
+#chosen{font-size:12px;margin:8px 0}
+#boards{grid-template-columns:1fr!important;margin-top:10px}
+.game-actions{display:grid;grid-template-columns:1fr 1fr 2fr;gap:7px;margin-top:12px}
+.game-actions button{margin:0;padding:14px 3px;border-radius:10px;color:white;background:#e45a48}
+.game-actions button:nth-child(2){background:#963c45}
+.game-actions button:nth-child(3){background:#b88924}
+.history{font-size:11px;color:#ddd;margin:8px 0;overflow-wrap:anywhere}
+@media(max-width:390px){.top-stats small{font-size:9px}.top-stats b{font-size:12px}.ball-cell{font-size:11px;min-height:25px}.big-ball{font-size:32px;min-height:110px}}
+
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDbSNf3LzSK4oumQ6YlRKEi_PPCUATwUEI",
+  authDomain: "oromiabingogamebot-41658.firebaseapp.com",
+  databaseURL: "https://oromiabingogamebot-41658-default-rtdb.firebaseio.com",
+  projectId: "oromiabingogamebot-41658",
+  storageBucket: "oromiabingogamebot-41658.firebasestorage.app",
+  messagingSenderId: "553607591406",
+  appId: "1:553607591406:web:c85e6fb67889ddc55d0aff",
+  measurementId: "G-T7ZNJ36L64"
+});
+const database = firebase.database();
+const auth = firebase.auth();
+auth.signInAnonymously().catch(error => console.error("Auth:", error));
+</script>
+</head>
+<body>
+<div class="container">
+<h1>🎱 OROMIA BINGO</h1>
+
+<div class="card" id="walletMenu">
+<h3>💳 Tajaajila Maallaqaa</h3>
+<div class="wallet-menu">
+<button onclick="showWalletInfo('deposit')">💳 Deposit</button>
+<button onclick="showWalletInfo('wallet')">👛 Wallet</button>
+<button onclick="showWalletInfo('balance')">💰 Check Balance</button>
+<button onclick="showWalletInfo('withdraw')">🏧 Withdrawal</button>
+<button onclick="showWalletInfo('support')">🆘 Support</button>
+<button onclick="shareContact()">📱 Share Contact</button>
+</div>
+<div id="walletInfo"></div>
+</div>
+
+<div class="card" id="register">
+<h2>Welcome to <span style="color:#ffd42a">Oromia Bingo</span></h2>
+<div class="stake-box">
+<h3>▷ Choose Your Stake</h3>
+<button class="play10" onclick="chooseStake(10)">▷ Play 10</button>
+<button class="play20" onclick="chooseStake(20)">▷ Play 20</button>
+</div>
+
+</div>
+
+<div class="card hidden" id="picker">
+<h3>🎴 Kaardii filadhu</h3>
+<p>Yeroo hafe: <b id="timer">50</b> sekondii</p>
+<p>Kaardii 1 hanga 3 filachuu dandeessa.</p>
+<p id="selectedCount">Kaardii filatame: 0 / 3</p>
+<div id="cards"></div>
+<p id="pickmsg"></p>
+
+</div>
+
+<div class="game-room hidden" id="game">
+<div class="top-stats">
+<div><small>GAME ID</small><b id="gameId">OROMIA</b></div>
+<div><small>PLAYERS</small><b id="players">1</b></div>
+<div><small>BET</small><b id="betValue">10 ETB</b></div>
+<div><small>DERASH</small><b id="prizeValue">--</b></div>
+<div><small>CALLED</small><b id="count">0/75</b></div>
+</div>
+<div class="game-columns">
+<div class="ball-board">
+<div class="ball-head"><b>B</b><b>I</b><b>N</b><b>G</b><b>O</b></div>
+<div id="ballGrid"></div>
+</div>
+<div class="game-side">
+<div class="sound-bar">🔊 <span id="lastBallSmall">--</span></div>
+<div class="big-ball" id="called">--</div>
+<div class="auto-switch">Automatic <input id="autoToggle" type="checkbox" checked onchange="toggleAutomatic(this.checked)"></div>
+<div class="watch-panel">
+<h2>Watching Only</h2>
+<p id="message">Lakkoofsi ofumaan waamamaa jira...</p>
+<div id="chosen"></div>
+<div id="boards"></div>
+</div>
+</div>
+</div>
+<div class="game-actions">
+<button onclick="leaveGame()">Leave</button>
+<button onclick="refreshGame()">⟳ Refresh</button>
+<button onclick="toggleAutomatic(true)">Automatic</button>
+</div>
+<div id="calledHistory" class="history"></div>
+</div>
+</div>
+
+<script>
+let stake=10;
+let selectedCards=new Set();
+let boards=[];
+let numbers=[];
+let calledSet=new Set();
+let autoCallId=null;
+let selectionTimer=null;
+let seconds=50;
+let restartTimer=null;
+let roundEnded=false;
+
+function chooseStake(amount){stake=amount;openPicker();}
+
+function buildBallGrid(){
+ const grid=document.getElementById("ballGrid");
+ if(!grid)return;
+ grid.innerHTML="";
+ for(let i=1;i<=75;i++){
+  const cell=document.createElement("div");
+  cell.className="ball-cell";
+  cell.id="ball-"+i;
+  cell.textContent=i;
+  grid.appendChild(cell);
+ }
+}
+function toggleAutomatic(on){
+ if(on&&!roundEnded&&!autoCallId)autoCallId=setInterval(callNumber,3000);
+ if(!on){clearInterval(autoCallId);autoCallId=null;}
+ const t=document.getElementById("autoToggle");
+ if(t)t.checked=on;
+}
+function leaveGame(){
+ clearInterval(autoCallId);clearInterval(selectionTimer);clearTimeout(restartTimer);
+ roundEnded=true;
+ document.getElementById("game").classList.add("hidden");
+ document.getElementById("register").classList.remove("hidden");
+ selectedCards.clear();
+}
+function refreshGame(){if(selectedCards.size)startRound();}
+
+
+function openPicker(){
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("picker").classList.remove("hidden");
+  makeCards();
+  seconds=50;
+  document.getElementById("timer").textContent=seconds;
+  selectionTimer=setInterval(()=>{
+    seconds--;
+    document.getElementById("timer").textContent=seconds;
+    if(seconds<=0){
+      clearInterval(selectionTimer);
+      if(selectedCards.size===0){
+        document.getElementById("picker").classList.add("hidden");
+        document.getElementById("register").classList.remove("hidden");
+        document.getElementById("pickmsg").textContent=
+          "Yeroo 50 sekondii keessatti kaardii hin filanne. Marsaan kun siif darbe.";
+        return;
+      }
+      startSelectedGame();
+    }
+  },1000);
+}
+
+function makeCards(){
+  let box=document.getElementById("cards");
+  box.innerHTML="";
+  for(let i=1;i<=500;i++){
+    let b=document.createElement("button");
+    b.textContent=i;
+    if(selectedCards.has(i))b.classList.add("selected");
+    b.onclick=()=>toggleCard(i,b);
+    box.appendChild(b);
+  }
+  updateSelectedCount();
+}
+
+function toggleCard(n,button){
+  if(selectedCards.has(n)){
+    selectedCards.delete(n);
+    button.classList.remove("selected");
+  }else{
+    if(selectedCards.size>=3){
+      document.getElementById("pickmsg").textContent=
+        "Kaardii 3 ol filachuu hin dandeessu!";
+      return;
+    }
+    selectedCards.add(n);
+    button.classList.add("selected");
+  }
+  document.getElementById("pickmsg").textContent="";
+  updateSelectedCount();
+}
+
+function updateSelectedCount(){
+  document.getElementById("selectedCount").textContent=
+    "Kaardii filatame: "+selectedCards.size+" / 3";
+}
+
+function startSelectedGame(){
+  if(selectedCards.size===0){
+    document.getElementById("pickmsg").textContent=
+      "Maaloo kaardii tokko filadhu!";
+    return;
+  }
+  clearInterval(selectionTimer);
+  document.getElementById("picker").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  document.getElementById("chosen").textContent=
+    "Stake: "+stake+" ETB | Kaardii: "+[...selectedCards].join(", ");
+  startRound();
+}
+
+function makeBoard(cardNumber){
+  let ranges=[[1,15],[16,30],[31,45],[46,60],[61,75]];
+  let columns=ranges.map(([a,b])=>{
+    let arr=[];
+    for(let i=a;i<=b;i++)arr.push(i);
+    arr.sort(()=>Math.random()-.5);
+    return arr.slice(0,5);
+  });
+
+  let wrapper=document.createElement("div");
+  wrapper.className="player-board";
+  let heading=document.createElement("h3");
+  heading.textContent="🎴 Kaardii #"+cardNumber;
+  wrapper.appendChild(heading);
+
+  let board=document.createElement("div");
+  board.className="board";
+
+  for(let r=0;r<5;r++){
+    for(let c=0;c<5;c++){
+      let cell=document.createElement("div");
+      cell.className="cell";
+      if(r===2&&c===2){
+        cell.textContent="FREE";
+        cell.classList.add("marked");
+      }else{
+        cell.textContent=columns[c][r];
+        cell.dataset.number=columns[c][r];
+      }
+      board.appendChild(cell);
+    }
+  }
+  wrapper.appendChild(board);
+  return wrapper;
+}
+
+function startRound(){
+  clearInterval(autoCallId);
+  clearTimeout(restartTimer);
+  roundEnded=false;
+  numbers=Array.from({length:75},(_,i)=>i+1);
+  numbers.sort(()=>Math.random()-.5);
+  calledSet.clear();
+
+  buildBallGrid();
+  document.getElementById("gameId").textContent="OB-"+Date.now().toString().slice(-6);
+  document.getElementById("betValue").textContent=stake+" ETB";
+  document.getElementById("prizeValue").textContent="--";
+  document.getElementById("lastBallSmall").textContent="--";
+  document.getElementById("autoToggle").checked=true;
+  document.getElementById("called").textContent="--";
+  document.getElementById("calledHistory").textContent="";
+  document.getElementById("count").textContent="0 / 75";
+  document.getElementById("message").textContent=
+    "Lakkoofsi ofumaan waamamaa jira...";
+
+  let box=document.getElementById("boards");
+  box.innerHTML="";
+  boards=[];
+  [...selectedCards].forEach(card=>{
+    let board=makeBoard(card);
+    box.appendChild(board);
+    boards.push({number:card,element:board});
+  });
+
+  autoCallId=setInterval(callNumber,3000);
+}
+
+function callNumber(){
+  if(roundEnded)return;
+
+  if(numbers.length===0){
+    endRound("🤝 DRAW! Lakkoofsota 75 hundi waamamaniiru. Injifataan hin jiru!");
+    return;
+  }
+
+  let n=numbers.pop();
+  calledSet.add(n);
+
+  database.ref("bingo/game").update({
+    currentNumber: n,
+    calledNumbers: [...calledSet],
+    updatedAt: Date.now()
+  }).catch(error => console.error("Firebase:", error));
+
+  let letter=n<=15?"B":n<=30?"I":n<=45?"N":n<=60?"G":"O";
+  document.getElementById("called").textContent=letter+" - "+n;
+  document.getElementById("lastBallSmall").textContent=letter+" - "+n;
+  const ballCell=document.getElementById("ball-"+n);
+  if(ballCell)ballCell.classList.add("called-ball");
+  document.getElementById("calledHistory").textContent="Waamaman: "+[...calledSet].join(", ");
+  document.getElementById("count").textContent=
+    calledSet.size+" / 75";
+
+  document.querySelectorAll(".cell[data-number='"+n+"']").forEach(cell=>{
+    cell.classList.add("marked");
+  });
+
+  for(let board of boards){
+    if(checkBingo(board.element)){
+      endRound("🎉 BINGO! Kaardii #"+board.number+
+        " mo'ate! Baga gammaddan!");
+      return;
+    }
+  }
+}
+
+function checkBingo(wrapper){
+  let cells=[...wrapper.querySelectorAll(".cell")];
+  let marked=cells.map(c=>c.classList.contains("marked"));
+
+  for(let r=0;r<5;r++){
+    if([0,1,2,3,4].every(c=>marked[r*5+c]))return true;
+  }
+  for(let c=0;c<5;c++){
+    if([0,1,2,3,4].every(r=>marked[r*5+c]))return true;
+  }
+  if([0,4,20,24].every(i=>marked[i]))return true;
+  if([0,6,12,18,24].every(i=>marked[i]))return true;
+  if([4,8,12,16,20].every(i=>marked[i]))return true;
+  return false;
+}
+
+function endRound(message){
+  roundEnded=true;
+  clearInterval(autoCallId);
+  clearTimeout(restartTimer);
+  document.getElementById("message").textContent=message+" Sekondii 5 booda kaardii filadhu.";
+  restartTimer=setTimeout(()=>{
+    document.getElementById("game").classList.add("hidden");
+    selectedCards.clear();
+    document.getElementById("pickmsg").textContent="";
+    openPicker();
+  },5000);
+}
+
+function shareContact(){
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if(tg && typeof tg.requestContact === "function"){
+    tg.requestContact(function(shared){
+      const info=document.getElementById("walletInfo");
+      info.textContent=shared
+        ? "✅ Gaaffiin Share Contact milkaa'e. Bot keessatti ergaa contact mirkaneessi."
+        : "Share Contact hin kennamne. Yeroo barbaadde irra deebi'i.";
+      info.style.display="block";
+    });
+  } else {
+    window.open("https://t.me/OromiaBingo", "_blank");
+    const info=document.getElementById("walletInfo");
+    info.textContent="Bot @OromiaBingo baniitii Contact kee qoodi.";
+    info.style.display="block";
+  }
+}
+
+function showWalletInfo(type){
+  const info=document.getElementById("walletInfo");
+  if(type==="support"){
+    const tg=window.Telegram && window.Telegram.WebApp;
+    if(tg && typeof tg.openTelegramLink==="function"){
+      tg.openTelegramLink("https://t.me/OromiaBingo");
+    } else {
+      window.open("https://t.me/OromiaBingo","_blank");
+    }
+    info.textContent="🆘 Support: @OromiaBingo";
+    info.style.display="block";
+    return;
+  }
+  const messages={
+    deposit:"💳 Deposit: Telebirr kaffaltii mirkaneessuun erga qindaa'ee booda hojii irra oola.",
+    wallet:"👛 Wallet: Maallaqni deposit fi bonus adda addaan qabama.",
+    balance:"💰 Balance dhugaa hanga Firebase wallet mirkanaa'utti hin agarsiifamu.",
+    withdraw:"🏧 Withdrawal: Deposit dhugaan mirkanaa'e yoo xiqqaate 50 ETB barbaachisa. Bonus hin lakkaa'amu. Kaffaltiin erguun API Payout barbaada."
+  };
+  info.textContent=messages[type]||"Tajaajilli kun amma hin qindaa'in.";
+  info.style.display="block";
+}
+</script>
+</body>
+</html>
